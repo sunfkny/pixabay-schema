@@ -6,12 +6,10 @@ from typing import Literal
 
 import bs4
 import pandas as pd
+from curl_cffi import requests
 from loguru import logger
 from pydantic import BaseModel, Field, TypeAdapter
-
-from flaresolverr import FlareSolverr
-
-flaresolverr = FlareSolverr()
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 
 class ThingModel(BaseModel):
@@ -53,22 +51,19 @@ def is_pixabay_url(url) -> bool:
 PIXABAY_CACHE_SHELVE = "pixabay_cache.shelve.sqlite3"
 
 
+@retry(stop=stop_after_attempt(10), wait=wait_fixed(1))
 def get_published_date_from_url(url: str):
     if not is_pixabay_url(url):
         return None
     with shelve.open(PIXABAY_CACHE_SHELVE) as cache:
         published_date: datetime.datetime | None = cache.get(url)
         if published_date:
-            logger.info(f"Using cached published date for {url}")
             return published_date.astimezone().replace(tzinfo=None)
 
     logger.info(f"Getting published date from {url}")
-    data = flaresolverr.request.get(
-        url=url,
-        proxy={"url": "http://host.docker.internal:7890"},
-    )
-    data = data.unwrap_response_ok()
-    response = data.solution.response
+    r = requests.get(url, impersonate="chrome")
+    r.raise_for_status()
+    response = r.text
     published_date = get_published_date_from_response(response)
     logger.info(f"Published Date: {published_date}")
 
@@ -106,12 +101,12 @@ def main():
     parser.add_argument(
         "--link-col",
         type=str,
-        default="Link",
+        default="link",
     )
     parser.add_argument(
         "--published-date-col",
         type=str,
-        default="Published date",
+        default="published_date",
     )
 
     args = parser.parse_args()
