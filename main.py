@@ -11,6 +11,8 @@ from loguru import logger
 from pydantic import BaseModel, Field, TypeAdapter
 from tenacity import retry, stop_after_attempt, wait_fixed
 
+session = requests.Session()
+
 
 class ThingModel(BaseModel):
     context_: Literal["http://schema.org"] = Field(alias="@context")
@@ -61,7 +63,14 @@ def get_published_date_from_url(url: str):
             return published_date.astimezone().replace(tzinfo=None)
 
     logger.info(f"Getting published date from {url}")
-    r = requests.get(url, impersonate="chrome")
+
+    try:
+        r = session.get(url, impersonate="chrome")
+    except requests.exceptions.RequestException as e:
+        if e.code == 23:
+            raise KeyboardInterrupt
+        raise
+
     r.raise_for_status()
     response = r.text
     published_date = get_published_date_from_response(response)
