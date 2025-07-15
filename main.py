@@ -1,4 +1,3 @@
-import argparse
 import datetime
 import pathlib
 import shelve
@@ -7,7 +6,7 @@ from typing import Literal
 import bs4
 import pandas as pd
 from curl_cffi import requests
-from loguru import logger
+from gooey import Gooey, GooeyParser
 from pydantic import BaseModel, Field, TypeAdapter
 from tenacity import retry, stop_after_attempt, wait_fixed
 
@@ -62,7 +61,7 @@ def get_published_date_from_url(url: str):
         if published_date:
             return published_date.astimezone().replace(tzinfo=None)
 
-    logger.info(f"Getting published date from {url}")
+    print(f"Getting published date from {url}")
 
     try:
         r = session.get(url, impersonate="chrome")
@@ -74,7 +73,7 @@ def get_published_date_from_url(url: str):
     r.raise_for_status()
     response = r.text
     published_date = get_published_date_from_response(response)
-    logger.info(f"Published Date: {published_date}")
+    print(f"Published Date: {published_date}")
 
     with shelve.open(PIXABAY_CACHE_SHELVE) as cache:
         cache[url] = published_date
@@ -89,32 +88,32 @@ class Args(BaseModel):
     published_date_col: str
 
 
+@Gooey(
+    program_name="Pixabay Publish Date Scraper",
+    progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
+    progress_expr="current / total * 100",
+)
 def main():
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    parser = GooeyParser()
+    parser.add_argument(
+        "input_file",
+        help="输入文件",
+        widget="FileChooser",
     )
     parser.add_argument(
-        "-i",
-        "--input-file",
-        type=pathlib.Path,
-        required=True,
-        help="Input file",
+        "output_file",
+        help="保存路径",
+        widget="FileSaver",
+        default="output.xlsx",
     )
     parser.add_argument(
-        "-o",
-        "--output-file",
-        type=pathlib.Path,
-        required=True,
-        help="Output file",
-    )
-    parser.add_argument(
-        "--link-col",
-        type=str,
+        "link_col",
+        help="链接字段名",
         default="link",
     )
     parser.add_argument(
-        "--published-date-col",
-        type=str,
+        "published_date_col",
+        help="发布日期字段名",
         default="published_date",
     )
 
@@ -122,7 +121,14 @@ def main():
     args = Args.model_validate(args, from_attributes=True)
 
     df = pd.read_excel(args.input_file)
-    df[args.published_date_col] = df[args.link_col].apply(get_published_date_from_url)
+    if args.link_col not in df.columns:
+        raise ValueError(f"{args.link_col!r}列不存在")
+
+    # df[args.published_date_col] = df[args.link_col].apply(get_published_date_from_url)
+    links = df[args.link_col].to_list()
+    for index, link in enumerate(links):
+        print(f"progress: {index + 1}/{len(links)}")
+        df.at[index, args.published_date_col] = get_published_date_from_url(link)
     df.to_excel(args.output_file, index=False)
 
 
