@@ -78,27 +78,6 @@ wheels = [
 ]
 
 [[package]]
-name = "click"
-version = "8.2.1"
-source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
-dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://mirrors.aliyun.com/pypi/packages/60/6c/8ca2efa64cf75a977a0d7fac081354553ebe483345c734fb6b6515d96bbc/click-8.2.1.tar.gz", hash = "sha256:27c491cc05d968d271d5a1db13e3b5a184636d9d930f148c50b038f0d0646202" }
-wheels = [
-    { url = "https://mirrors.aliyun.com/pypi/packages/85/32/10bb5764d90a8eee674e9dc6f4db6a0ab47c8c4d0d83c27f7c39ac415a4d/click-8.2.1-py3-none-any.whl", hash = "sha256:61a3265b914e850b85317d0b3109c7f8cd35a670f963866005d6ef1d5175a12b" },
-]
-
-[[package]]
-name = "colorama"
-version = "0.4.6"
-source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
-sdist = { url = "https://mirrors.aliyun.com/pypi/packages/d8/53/6f443c9a4a8358a93a6792e2acffb9d9d5cb0a5cfd8802644b7b1c9a02e4/colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44" }
-wheels = [
-    { url = "https://mirrors.aliyun.com/pypi/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6" },
-]
-
-[[package]]
 name = "colored"
 version = "2.3.0"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -300,11 +279,6 @@ dependencies = [
     { name = "tenacity" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "pyfuze" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.13.4" },
@@ -316,9 +290,6 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32.4" },
     { name = "tenacity", specifier = ">=9.1.2" },
 ]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pyfuze", specifier = ">=2.7.1" }]
 
 [[package]]
 name = "psutil"
@@ -385,17 +356,6 @@ wheels = [
     { url = "https://mirrors.aliyun.com/pypi/packages/a4/7d/e09391c2eebeab681df2b74bfe6c43422fffede8dc74187b2b0bf6fd7571/pydantic_core-2.33.2-cp313-cp313t-macosx_11_0_arm64.whl", hash = "sha256:61c18fba8e5e9db3ab908620af374db0ac1baa69f0f32df4f61ae23f15e586ac" },
     { url = "https://mirrors.aliyun.com/pypi/packages/f1/3d/847b6b1fed9f8ed3bb95a9ad04fbd0b212e832d4f0f50ff4d9ee5a9f15cf/pydantic_core-2.33.2-cp313-cp313t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:95237e53bb015f67b63c91af7518a62a8660376a6a0db19b89acc77a4d6199f5" },
     { url = "https://mirrors.aliyun.com/pypi/packages/6f/9a/e73262f6c6656262b5fdd723ad90f518f579b7bc8622e43a942eec53c938/pydantic_core-2.33.2-cp313-cp313t-win_amd64.whl", hash = "sha256:c2fc0a768ef76c15ab9238afa6da7f69895bb5d1ee83aeea2e3509af4472d0b9" },
-]
-
-[[package]]
-name = "pyfuze"
-version = "2.7.1"
-source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
-dependencies = [
-    { name = "click" },
-]
-wheels = [
-    { url = "https://mirrors.aliyun.com/pypi/packages/08/80/3b5ef5ad6be12113f28ef3651ddf1d851df5747a578fccc717818ede7efc/pyfuze-2.7.1-py3-none-any.whl", hash = "sha256:ca573192ad09dd6b971d04939cb389d544b4c63015ce1043bfc3c42552d5a432" },
 ]
 
 [[package]]
