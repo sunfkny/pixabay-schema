@@ -1,12 +1,12 @@
 import datetime
 import pathlib
 import shelve
+from argparse import ArgumentParser
 from typing import Literal
 
 import bs4
 import pandas as pd
 from curl_cffi import requests
-from gooey import Gooey, GooeyParser
 from pydantic import BaseModel, Field, TypeAdapter
 from tenacity import retry, stop_after_attempt, wait_fixed
 
@@ -88,32 +88,32 @@ class Args(BaseModel):
     published_date_col: str
 
 
-@Gooey(
-    program_name="Pixabay Publish Date Scraper",
-    progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
-    progress_expr="current / total * 100",
-)
 def main():
-    parser = GooeyParser()
+    parser = ArgumentParser()
     parser.add_argument(
-        "input_file",
+        "-i",
+        "--input_file",
+        type=pathlib.Path,
         help="输入文件",
-        widget="FileChooser",
+        required=True,
     )
     parser.add_argument(
-        "output_file",
+        "-o",
+        "--output_file",
+        type=pathlib.Path,
         help="保存路径",
-        widget="FileSaver",
-        default="output.xlsx",
+        required=True,
     )
     parser.add_argument(
-        "link_col",
+        "--link_col",
         help="链接字段名",
+        type=str,
         default="link",
     )
     parser.add_argument(
-        "published_date_col",
+        "--published_date_col",
         help="发布日期字段名",
+        type=str,
         default="published_date",
     )
 
