@@ -38,7 +38,7 @@ def get_published_date_from_response(response: str):
         if isinstance(schema_model, ImageObjectModel):
             return schema_model.datePublished
 
-    raise ValueError("No datePublished found")
+    # raise ValueError("No datePublished found")
 
 
 def is_pixabay_url(url) -> bool:
@@ -70,10 +70,17 @@ def get_published_date_from_url(url: str):
             raise KeyboardInterrupt
         raise
 
+    if r.status_code == 404:
+        print(f"Status Code: {r.status_code}")
+        return None
+
     r.raise_for_status()
     response = r.text
     published_date = get_published_date_from_response(response)
     print(f"Published Date: {published_date}")
+
+    if published_date is None:
+        return None
 
     with shelve.open(PIXABAY_CACHE_SHELVE) as cache:
         cache[url] = published_date
